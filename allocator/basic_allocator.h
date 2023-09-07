@@ -2,32 +2,54 @@
 #define _BASIC_ALLOCATOR_H
 
 #include <cstdlib>
+#include <cstddef>
+#include <cstdio>
+#include <new>
+
+/**
+ *  
+ * 
+*/
 
 namespace TinySTL {
-class basic_allocator {
-public:
-    /**
-     * 
-     * 
-    */
-    static void* allocate(size_t bytes);
+struct FreeList {
+    FreeList* next;     // next memory block
+    char* data;         // this node
+    FreeList() {next = nullptr;}
+};
 
-    /**
-     * 
-     * 
-    */
-    static void deallocate(void* ptr, size_t bytes);
+enum {
+  EAlign128 = 8, 
+  EAlign256 = 16, 
+  EAlign512 = 32,
+  EAlign1024 = 64, 
+  EAlign2048 = 128,
+  EAlign4096 = 256
+};
 
-    /**
-     * 
-     * 
-    */
-    static void* reallocate(void* ptr, size_t old_size, size_t new_size);
+enum { ESmallObjectBytes = 4096 };
+
+enum { EFreeListsNumber = 64 };
+
+
+class BasicAllocator {
 private:
-    enum _B_Align { ALIGN = 8 };
-    enum _B_MaxBytes {  MAX_BYTES = 128 };
-    enum _B_N_FreeList { N_FREELISTS = (_B_MaxBytes::MAX_BYTES / _B_Align::ALIGN) };
-    enum _B_N_Objects { N_OBJECTS = 20};
+    static char* _start_free;
+    static char* _end_free;
+    static size_t _heap_size;
+    static FreeList _free_list[EFreeListsNumber];  // consider FreeList* 
+
+    static size_t memory_align(size_t bytes);
+    static size_t memory_round_up(size_t bytes);
+    static size_t memory_freelist_index(size_t bytes);
+    static void* memory_refill(size_t size);
+    static char* memory_chunk_alloc(size_t size, size_t &nobj);
+
+public:
+    void* allocate(size_t bytes);
+    void* deallocate(void* first_address, size_t bytes);
+    void* reallocate(void* first_address, size_t pre_size, size_t new_size);
+
 
 };
 } // end namespace TinySTL 
