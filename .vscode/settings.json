@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "type_traits": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabled"
 }

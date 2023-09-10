@@ -7,8 +7,8 @@
 #include <new>
 
 /**
- *  
- * 
+ * This file has no effect. 
+ * This is a file I wrote when I was imitating https://github.com/Alinshans/MyTinySTL.
 */
 
 namespace TinySTL {
