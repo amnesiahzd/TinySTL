@@ -24,7 +24,7 @@ template<class T1, class T2>
 struct pair;
 
 template<class T>
-struct is_pair : TinySTL::pair {};
+struct is_pair : TinySTL::m_false_type {};
 
 template <class T1, class T2>
 struct is_pair<TinySTL::pair<T1, T2>> : TinySTL::m_true_type {};
