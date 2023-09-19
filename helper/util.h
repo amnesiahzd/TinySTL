@@ -81,4 +81,98 @@ template <class T, size_t N>
 void swap(T(&a)[N], T(&b)[N]) {
   mystl::swap_range(a, a + N, b);
 }
+
+template <class T1, class T2>
+struct pair {
+    T1 first;
+    T2 second;
+
+    // 1.T1 is the defualt value of Other1, if not specify the Other1, will use the T1 as the defualt 
+    // 2.std::enable_if in C++11, able/disable template function according to the bool value of the first element
+    //   if true, return void(the second element)
+    //   if false, return illeagle type 
+    // 3.std::enable_if will return a type rather not a value
+    // 4. typename = ... is not a necessary part, only to be clear to the struct of the code
+
+    template <class Other1 = T1, 
+              class Other2 = T2, 
+              typename = typename std::enable_if<std::is_default_constructible<Other1>::value && 
+                                                 std::is_default_constructible<Other2>::value, void>::type>
+    constexpr pair() : first(), second() {}
+
+    // 1.std::is_convertible check the type A can trans to type B
+    // 2.= 0 is the default value
+    // TODO: get clear why its int to be the third param of the template
+
+    template <class U1 = T1, 
+              class U2 = T2,
+              typename = typename std::enable_if<std::is_copy_constructible<U1>::value &&
+                                                 std::is_copy_constructible<U2>::value &&
+                                                 std::is_convertible<const U1&, T1>::value &&
+                                                 std::is_convertible<const U2&, T2>::value, int>::type = 0>
+    constexpr pair(const U1& a, const U2& b) : first(a), second(b) {} // Original code here is T1, T2, i think U1 and U2 is the correct
+
+    template <class U1 = T1, 
+              class U2 = T2,
+              typename = typename std::enable_if<std::is_copy_constructible<U1>::value &&
+                                                 std::is_copy_constructible<U2>::value &&
+                                                 (!std::is_convertible<const U1&, T1>::value || 
+                                                 !std::is_convertible<const U2&, T2>::value), int>::type = 0>
+    explicit constexpr pair(const U1& a, const U2& b) : first(a), second(b) {} // Original code here is T1, T2, i think U1 and U2 is the correct
+
+    pair(const pair& rhs) = default;
+    pair(pair&& rhs) = default;
+
+    template <class Other1, 
+              class Other2,
+              typename = typename std::enable_if<std::is_constructible<T1, Other1>::value &&
+                                                 std::is_constructible<T2, Other2>::value &&
+                                                 std::is_convertible<Other1&&, T1>::value &&
+                                                 std::is_convertible<Other2&&, T2>::value, int>::type = 0>
+    constexpr pair(Other1&& a, Other2&& b) : first(TinySTL::forward<Other1>(a)), second(TinySTL::forward<Other2>(b)) {}
+
+    template <class Other1, 
+              class Other2,
+              typename = typename std::enable_if<std::is_constructible<T1, Other1>::value && 
+                                                 std::is_constructible<T2, Other2>::value &&
+                                                 (!std::is_convertible<Other1, T1>::value ||
+                                                 !std::is_convertible<Other2, T2>::value), int>::type = 0>
+    explicit constexpr pair(Other1&& a, Other2&& b) : first(mystl::forward<Other1>(a)), second(mystl::forward<Other2>(b)) {}
+
+    template <class Other1, 
+              class Other2,
+              typename = typename std::enable_if<std::is_constructible<T1, const Other1&>::value &&
+                                                 std::is_constructible<T2, const Other2&>::value &&
+                                                 std::is_convertible<const Other1&, T1>::value &&
+                                                 std::is_convertible<const Other2&, T2>::value, int>::type = 0>
+    constexpr pair(const pair<Other1, Other2>& other) : first(other.first),  second(other.second) {}
+
+    template <class Other1, 
+              class Other2,
+              typename = typename std::enable_if<std::is_constructible<T1, const Other1&>::value &&
+                                                 std::is_constructible<T2, const Other2&>::value &&
+                                                 (!std::is_convertible<const Other1&, T1>::value ||
+                                                 !std::is_convertible<const Other2&, T2>::value), int>::type = 0>
+    explicit constexpr pair(const pair<Other1, Other2>& other) : first(other.first), second(other.second) {}
+
+    template <class Other1, 
+              class Other2,
+              typename = typename std::enable_if<std::is_constructible<T1, Other1>::value &&
+                                                 std::is_constructible<T2, Other2>::value &&
+                                                 std::is_convertible<Other1, T1>::value &&
+                                                 std::is_convertible<Other2, T2>::value, int>::type = 0>
+    constexpr pair(pair<Other1, Other2>&& other) : first(mystl::forward<Other1>(other.first)), 
+                                                   second(mystl::forward<Other2>(other.second)) {}
+
+    template <class Other1, 
+              class Other2,
+              typename = typename std::enable_if<std::is_constructible<T1, Other1>::value &&
+                                                 std::is_constructible<T2, Other2>::value &&
+                                                 (!std::is_convertible<Other1, T1>::value ||
+                                                 !std::is_convertible<Other2, T2>::value), int>::type = 0>
+    explicit constexpr pair(pair<Other1, Other2>&& other) : first(mystl::forward<Other1>(other.first)),
+                                                            second(mystl::forward<Other2>(other.second)) {}
+};
+
+
 } // end namespace TinySTL
