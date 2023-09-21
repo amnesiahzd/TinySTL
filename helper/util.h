@@ -172,6 +172,88 @@ struct pair {
                                                  !std::is_convertible<Other2, T2>::value), int>::type = 0>
     explicit constexpr pair(pair<Other1, Other2>&& other) : first(mystl::forward<Other1>(other.first)),
                                                             second(mystl::forward<Other2>(other.second)) {}
+
+    pair& operator=(const pair& rhs) {
+        if (this != &rhs) { 
+            first = rhs.first;
+            second = rhs.second;
+        }
+
+        return *this;
+    }
+
+    pair& operator=(pair&& rhs) {
+        if (this != &rhs) {
+            first = TinySTL::move(first);
+            second = TinySTL::move(second);
+        }
+
+        return *this;
+    }
+
+    template <class Other1, class Other2>
+    pair& operator=(const pair<Other1, Other2>& other) {
+        first = other.first;
+        second = other.second;
+        return *this;
+    }
+
+    template <class Other1, class Other2>
+    pair& operator=(pair<Other1, Other2>&& other) {
+        first = TinySTL::move(other.first);
+        second = TinySTL::move(other.second);
+        return *this;
+    }
+
+    ~pair() = default;
+
+    void swap(pair& other) {
+        if (this != &other) {
+            TinySTL::swap(first, other.first);
+            TinySTL::swap(second, other.second);
+        }
+    }
+
+    template <class T1, class T2>
+    bool operator==(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
+        return lhs.first == rhs.first && lhs.second == rhs.second;
+    }
+
+    template <class T1, class T2>
+    bool operator<(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
+        return lhs.first < rhs.first || (lhs.first == rhs.first && lhs.second < rhs.second);
+    }
+
+    template <class T1, class T2>
+    bool operator!=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
+        return !(lhs == rhs);
+    }
+
+    template <class T1, class T2>
+    bool operator>(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
+        return rhs < lhs;
+    }
+
+    template <class T1, class T2>
+    bool operator<=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
+        return !(rhs < lhs);
+    }
+
+    template <class T1, class T2>
+    bool operator>=(const pair<T1, T2>& lhs, const pair<T1, T2>& rhs) {
+        return !(lhs < rhs);
+    }
+
+    template <class T1, class T2>
+    void swap(pair<T1, T2>& lhs, pair<T1, T2>& rhs) {
+        lhs.swap(rhs);
+    }
+
+    // 全局函数，让两个数据成为一个 pair
+    template <class T1, class T2>
+    pair<T1, T2> make_pair(T1&& first, T2&& second) {
+        return pair<T1, T2>(mystl::forward<T1>(first), mystl::forward<T2>(second));
+    }
 };
 
 
