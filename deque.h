@@ -28,7 +28,7 @@ struct deque_buf_size {
 // deque iterator
 
 template <class T, class Ref, class Ptr>
-struct deque_iterator : public iterator<random_access_iterator_tag, T> {
+struct deque_iterator : public iterator<random_access_iterator_base, T> {
     typedef deque_iterator<T, T&, T*>             iterator;
     typedef deque_iterator<T, const T&, const T*> const_iterator;
     typedef deque_iterator                        self;
@@ -360,18 +360,18 @@ private:
     void fill_init(size_type n, const value_type& value);
 
     template <class IIter>
-    void copy_init(IIter, IIter, input_iterator_tag);
+    void copy_init(IIter, IIter, input_iterator_base);
 
     template <class FIter>
-    void copy_init(FIter, FIter, forward_iterator_tag);
+    void copy_init(FIter, FIter, forward_iterator_base);
 
     void fill_assign(size_type n, const value_type& value);
 
     template <class IIter>
-    void copy_assign(IIter first, IIter last, input_iterator_tag);
+    void copy_assign(IIter first, IIter last, input_iterator_base);
 
     template <class FIter>
-    void copy_assign(FIter first, FIter last, forward_iterator_tag);
+    void copy_assign(FIter first, FIter last, forward_iterator_base);
 
     template <class... Args>
     iterator insert_aux(iterator position, Args&& ...args);
@@ -382,10 +382,10 @@ private:
     void copy_insert(iterator, FIter, FIter, size_type);
 
     template <class IIter>
-    void insert_dispatch(iterator, IIter, IIter, input_iterator_tag);
+    void insert_dispatch(iterator, IIter, IIter, input_iterator_base);
 
     template <class FIter>
-    void insert_dispatch(iterator, FIter, FIter, forward_iterator_tag);
+    void insert_dispatch(iterator, FIter, FIter, forward_iterator_base);
 
     void require_capacity(size_type n, bool front);
     void reallocate_map_at_front(size_type need);
@@ -762,7 +762,7 @@ void deque<T>:: copy_assign(IIter first, IIter last, input_iterator_base) {
     if (first1 != last1) {
         erase(first1, last1);
     } else {
-        insert_dispatch(end_, first, last, input_iterator_tag{});
+        insert_dispatch(end_, first, last, input_iterator_base{});
     }
 }
 
@@ -967,7 +967,7 @@ copy_insert(iterator position, FIter first, FIter last, size_type n)
 template <class T>
 template <class IIter>
 void deque<T>::
-insert_dispatch(iterator position, IIter first, IIter last, input_iterator_tag)
+insert_dispatch(iterator position, IIter first, IIter last, input_iterator_base)
 {
   if (last <= first)  return;
   const size_type n = TinySTL::distance(first, last);
@@ -991,7 +991,7 @@ insert_dispatch(iterator position, IIter first, IIter last, input_iterator_tag)
 template <class T>
 template <class FIter>
 void deque<T>::
-insert_dispatch(iterator position, FIter first, FIter last, forward_iterator_tag)
+insert_dispatch(iterator position, FIter first, FIter last, forward_iterator_base)
 {
   if (last <= first)  return;
   const size_type n = TinySTL::distance(first, last);
@@ -1062,7 +1062,7 @@ void deque<T>::require_capacity(size_type n, bool front)
 template <class T>
 void deque<T>::reallocate_map_at_front(size_type need_buffer)
 {
-  const size_type new_map_size = mystl::max(map_size_ << 1,
+  const size_type new_map_size = TinySTL::max(map_size_ << 1,
                                             map_size_ + need_buffer + DEQUE_MAP_INIT_SIZE);
   map_pointer new_map = create_map(new_map_size);
   const size_type old_buffer = end_.node - begin_.node + 1;
@@ -1088,7 +1088,7 @@ void deque<T>::reallocate_map_at_front(size_type need_buffer)
 template <class T>
 void deque<T>::reallocate_map_at_back(size_type need_buffer)
 {
-  const size_type new_map_size = mystl::max(map_size_ << 1,
+  const size_type new_map_size = TinySTL::max(map_size_ << 1,
                                             map_size_ + need_buffer + DEQUE_MAP_INIT_SIZE);
   map_pointer new_map = create_map(new_map_size);
   const size_type old_buffer = end_.node - begin_.node + 1;
@@ -1115,13 +1115,13 @@ template <class T>
 bool operator==(const deque<T>& lhs, const deque<T>& rhs)
 {
   return lhs.size() == rhs.size() && 
-    mystl::equal(lhs.begin(), lhs.end(), rhs.begin());
+    TinySTL::equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 
 template <class T>
 bool operator<(const deque<T>& lhs, const deque<T>& rhs)
 {
-  return mystl::lexicographical_compare(
+  return TinySTL::lexicographical_compare(
     lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
@@ -1149,7 +1149,7 @@ bool operator>=(const deque<T>& lhs, const deque<T>& rhs)
   return !(lhs < rhs);
 }
 
-// 重载 mystl 的 swap
+// 重载 TinySTL 的 swap
 template <class T>
 void swap(deque<T>& lhs, deque<T>& rhs)
 {

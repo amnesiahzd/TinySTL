@@ -3,7 +3,7 @@
 
 #include <cassert>
 
-namespace mystl
+namespace TinySTL
 {
 
 #define MYSTL_DEBUG(expr) \

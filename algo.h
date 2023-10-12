@@ -1206,7 +1206,7 @@ void replace_if(ForwardIter first, ForwardIter last,
 // reverse
 // 将[first, last)区间内的元素反转
 /*****************************************************************************************/
-// reverse_dispatch 的 bidirectional_iterator_tag 版本
+// reverse_dispatch 的 bidirectional_iterator_base 版本
 template <class BidirectionalIter>
 void reverse_dispatch(BidirectionalIter first, BidirectionalIter last,
                       bidirectional_iterator_base)
@@ -1219,7 +1219,7 @@ void reverse_dispatch(BidirectionalIter first, BidirectionalIter last,
   }
 }
 
-// reverse_dispatch 的 random_access_iterator_tag 版本
+// reverse_dispatch 的 random_access_iterator_base 版本
 template <class RandomIter>
 void reverse_dispatch(RandomIter first, RandomIter last,
                       random_access_iterator_base)
@@ -1288,7 +1288,7 @@ void random_shuffle(RandomIter first, RandomIter last,
 // 将[first, middle)内的元素和 [middle, last)内的元素互换，可以交换两个长度不同的区间
 // 返回交换后 middle 的位置
 /*****************************************************************************************/
-// rotate_dispatch 的 forward_iterator_tag 版本
+// rotate_dispatch 的 forward_iterator_base 版本
 template <class ForwardIter>
 ForwardIter
 rotate_dispatch(ForwardIter first, ForwardIter middle,
@@ -1319,24 +1319,24 @@ rotate_dispatch(ForwardIter first, ForwardIter middle,
   return new_middle;
 }
 
-// rotate_dispatch 的 bidirectional_iterator_tag 版本
+// rotate_dispatch 的 bidirectional_iterator_base 版本
 template <class BidirectionalIter>
 BidirectionalIter
 rotate_dispatch(BidirectionalIter first, BidirectionalIter middle,
                 BidirectionalIter last, bidirectional_iterator_base)
 {
-  TinySTL::reverse_dispatch(first, middle, bidirectional_iterator_tag());
-  TinySTL::reverse_dispatch(middle, last, bidirectional_iterator_tag());
+  TinySTL::reverse_dispatch(first, middle, bidirectional_iterator_base());
+  TinySTL::reverse_dispatch(middle, last, bidirectional_iterator_base());
   while (first != middle && middle != last)
     TinySTL::swap(*first++, *--last);
   if (first == middle)
   {
-    TinySTL::reverse_dispatch(middle, last, bidirectional_iterator_tag());
+    TinySTL::reverse_dispatch(middle, last, bidirectional_iterator_base());
     return last;
   }
   else
   {
-    TinySTL::reverse_dispatch(first, middle, bidirectional_iterator_tag());
+    TinySTL::reverse_dispatch(first, middle, bidirectional_iterator_base());
     return first;
   }
 }
@@ -1354,7 +1354,7 @@ EuclideanRingElement rgcd(EuclideanRingElement m, EuclideanRingElement n)
   return m;
 }
 
-// rotate_dispatch 的 random_access_iterator_tag 版本
+// rotate_dispatch 的 random_access_iterator_base 版本
 template <class RandomIter>
 RandomIter
 rotate_dispatch(RandomIter first, RandomIter middle,
@@ -2462,7 +2462,7 @@ void nth_element(RandomIter first, RandomIter nth,
 // unique_copy
 // 从[first, last)中将元素复制到 result 上，序列必须有序，如果有重复的元素，只会复制一次
 /*****************************************************************************************/
-// unique_copy_dispatch 的 forward_iterator_tag 版本
+// unique_copy_dispatch 的 forward_iterator_base 版本
 template <class InputIter, class ForwardIter>
 ForwardIter
 unique_copy_dispatch(InputIter first, InputIter last,
@@ -2477,7 +2477,7 @@ unique_copy_dispatch(InputIter first, InputIter last,
   return ++result;
 }
 
-// unique_copy_dispatch 的 output_iterator_tag 版本
+// unique_copy_dispatch 的 output_iterator_base 版本
 // 由于 output iterator 只能进行只读操作，所以不能有 *result != *first 这样的判断
 template <class InputIter, class OutputIter>
 OutputIter
@@ -2507,7 +2507,7 @@ unique_copy(InputIter first, InputIter last, OutputIter result)
 }
 
 // 重载版本使用函数对象 comp 代替比较操作
-// unique_copy_dispatch 的 forward_iterator_tag 版本
+// unique_copy_dispatch 的 forward_iterator_base 版本
 template <class InputIter, class ForwardIter, class Compared>
 ForwardIter
 unique_copy_dispatch(InputIter first, InputIter last,
@@ -2522,7 +2522,7 @@ unique_copy_dispatch(InputIter first, InputIter last,
   return ++result;
 }
 
-// unique_copy_dispatch 的 output_iterator_tag 版本
+// unique_copy_dispatch 的 output_iterator_base 版本
 // 由于 output iterator 只能进行只读操作，所以不能有 *result != *first 这样的判断
 template <class InputIter, class OutputIter, class Compared>
 OutputIter
