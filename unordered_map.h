@@ -162,6 +162,124 @@ public:
     }
 
     // line 190
+    mapped_type& at(const key_type& key) {
+        iterator it = ht_.find(key);
+        THROW_OUT_OF_RANGE_IF(it.node == nullptr, "unordered_map<Key, T> no such element exists");
+        return it->second;
+    }
+
+    const mapped_type& at(const key_type& key) const {
+        iterator it = ht_.find(key);
+        THROW_OUT_OF_RANGE_IF(it.node == nullptr, "unordered_map<Key, T> no such element exists");
+        return it->second;
+    }
+
+    mapped_type& operator[](const key_type& key) {
+        iterator it = ht_.find(key);
+        if (it.node == nullptr)
+            it = ht_.emplace_unique(key, T{}).first;
+        return it->second;
+    }
+
+    mapped_type& operator[](key_type&& key) {
+        iterator it = ht_.find(key);
+        if (it.node == nullptr)
+            it = ht_.emplace_unique(mystl::move(key), T{}).first;
+        return it->second;
+    }
+
+    size_type count(const key_type& key) const { 
+        return ht_.count(key); 
+    }
+
+    iterator find(const key_type& key) { 
+        return ht_.find(key); 
+    }
+
+    const_iterator find(const key_type& key) const { 
+        return ht_.find(key); 
+    }
+
+    pair<iterator, iterator> equal_range(const key_type& key) { 
+        return ht_.equal_range_unique(key); 
+    }
+
+    pair<const_iterator, const_iterator> equal_range(const key_type& key) const { 
+        return ht_.equal_range_unique(key); 
+    }
+
+    local_iterator begin(size_type n) noexcept { 
+        return ht_.begin(n); 
+    }
+
+    const_local_iterator begin(size_type n) const noexcept { 
+        return ht_.begin(n); 
+    }
+
+    const_local_iterator cbegin(size_type n) const noexcept { 
+        return ht_.cbegin(n); 
+    }
+
+    local_iterator end(size_type n) noexcept { 
+        return ht_.end(n); 
+    }
+
+    const_local_iterator end(size_type n) const noexcept { 
+        return ht_.end(n); 
+    }
+    const_local_iterator cend(size_type n) const noexcept { 
+        return ht_.cend(n); 
+    }
+
+    size_type bucket_count() const noexcept { 
+        return ht_.bucket_count(); 
+    }
+
+    size_type max_bucket_count() const noexcept { 
+        return ht_.max_bucket_count(); 
+    }
+
+    size_type bucket_size(size_type n) const noexcept { 
+        return ht_.bucket_size(n); 
+    }
+
+    size_type bucket(const key_type& key) const { 
+        return ht_.bucket(key); 
+    }
+
+    float load_factor() const noexcept {
+        return ht_.load_factor();
+    }
+
+    float max_load_factor() const noexcept {
+        return ht_.max_load_factor();
+    }
+
+    void max_load_factor(float ml) { 
+        ht_.max_load_factor(ml); 
+    }
+
+    void rehash(size_type count) { 
+        ht_.rehash(count); 
+    }
+
+    void reserve(size_type count) { 
+        ht_.reserve(count); 
+    }
+
+    hasher hash_fcn() const { 
+        return ht_.hash_fcn(); 
+    }
+    key_equal key_eq() const { 
+        return ht_.key_eq(); 
+    }
+public:
+    friend bool operator==(const unordered_map& lhs, const unordered_map& rhs) {
+        return lhs.ht_.equal_range_unique(rhs.ht_);
+    }
+    friend bool operator!=(const unordered_map& lhs, const unordered_map& rhs) {
+        return !lhs.ht_.equal_range_unique(rhs.ht_);
+    }
 
 
 };
