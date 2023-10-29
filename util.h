@@ -67,7 +67,7 @@ template <class ForwardIter1, class ForwardIter2>
 ForwardIter2 swap_range(ForwardIter1 first_at_container_a, ForwardIter1 last_at_container_a, ForwardIter2 first_at_container_b) {
     // ignore the warning of return of ++first_at_container_b
     for (; first_at_container_a != last_at_container_a; ++first_at_container_a, (void) ++first_at_container_b) { 
-        mystl::swap(*first_at_container_a, *first_at_container_b);
+        TinySTL::swap(*first_at_container_a, *first_at_container_b);
     }
         
     return first_at_container_b;
@@ -79,7 +79,7 @@ ForwardIter2 swap_range(ForwardIter1 first_at_container_a, ForwardIter1 last_at_
 */
 template <class T, size_t N>
 void swap(T(&a)[N], T(&b)[N]) {
-  mystl::swap_range(a, a + N, b);
+  TinySTL::swap_range(a, a + N, b);
 }
 
 template <class T1, class T2>
@@ -137,7 +137,7 @@ struct pair {
                                                  std::is_constructible<T2, Other2>::value &&
                                                  (!std::is_convertible<Other1, T1>::value ||
                                                  !std::is_convertible<Other2, T2>::value), int>::type = 0>
-    explicit constexpr pair(Other1&& a, Other2&& b) : first(mystl::forward<Other1>(a)), second(mystl::forward<Other2>(b)) {}
+    explicit constexpr pair(Other1&& a, Other2&& b) : first(TinySTL::forward<Other1>(a)), second(TinySTL::forward<Other2>(b)) {}
 
     template <class Other1, 
               class Other2,
@@ -161,8 +161,8 @@ struct pair {
                                                  std::is_constructible<T2, Other2>::value &&
                                                  std::is_convertible<Other1, T1>::value &&
                                                  std::is_convertible<Other2, T2>::value, int>::type = 0>
-    constexpr pair(pair<Other1, Other2>&& other) : first(mystl::forward<Other1>(other.first)), 
-                                                   second(mystl::forward<Other2>(other.second)) {}
+    constexpr pair(pair<Other1, Other2>&& other) : first(TinySTL::forward<Other1>(other.first)), 
+                                                   second(TinySTL::forward<Other2>(other.second)) {}
 
     template <class Other1, 
               class Other2,
@@ -170,8 +170,8 @@ struct pair {
                                                  std::is_constructible<T2, Other2>::value &&
                                                  (!std::is_convertible<Other1, T1>::value ||
                                                  !std::is_convertible<Other2, T2>::value), int>::type = 0>
-    explicit constexpr pair(pair<Other1, Other2>&& other) : first(mystl::forward<Other1>(other.first)),
-                                                            second(mystl::forward<Other2>(other.second)) {}
+    explicit constexpr pair(pair<Other1, Other2>&& other) : first(TinySTL::forward<Other1>(other.first)),
+                                                            second(TinySTL::forward<Other2>(other.second)) {}
 
     pair& operator=(const pair& rhs) {
         if (this != &rhs) { 
@@ -252,7 +252,7 @@ struct pair {
     // 全局函数，让两个数据成为一个 pair
     template <class T1, class T2>
     pair<T1, T2> make_pair(T1&& first, T2&& second) {
-        return pair<T1, T2>(mystl::forward<T1>(first), mystl::forward<T2>(second));
+        return pair<T1, T2>(TinySTL::forward<T1>(first), TinySTL::forward<T2>(second));
     }
 };
 
